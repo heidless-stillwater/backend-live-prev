@@ -71,10 +71,13 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
     client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    settings_name = os.environ.get("SETTINGS_NAME", "pfolio_settings")
+    
     print(f"using secrets settings: {settings_name}")
+    
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+    
     print(f"SECRETS: {payload}")
     print(f"env settings: {env.read_env(io.StringIO(payload))}")
 
@@ -205,7 +208,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -222,14 +224,14 @@ USE_TZ = True
 from google.oauth2 import service_account
 GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/cloud-run-install-46148fec2375.json')
+    os.path.join(BASE_DIR, 'config/pfolio-deploy-1-689b97414b7c.json')
 )
 #STATIC_URL = "/static/"
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
 
-STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-3/'
+STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-1/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
