@@ -177,7 +177,7 @@ pfolio-backend-2
 
 # initialise App Engine
 gcloud app create
-REGION: europe-west
+REGION: europe-west2
 ```
 
 ## prep environment
