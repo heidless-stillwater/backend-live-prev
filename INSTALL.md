@@ -233,7 +233,7 @@ gcloud config set project heidless-pfolio-deploy
 
 # initialise DB Instance (takes some time  - take a break and let it process)
 gcloud sql instances create pfolio-instance-0 \
-    --project heidless-pfolio-deploy \
+    --project heidless-pfolio-deploy-0 \
     --database-version POSTGRES_13 \
     --tier db-f1-micro \
     --region europe-west2
@@ -459,7 +459,7 @@ Havana111965
 ##########################################
 
 ```
-export GOOGLE_CLOUD_PROJECT=heidless-pfolio-deploy
+export GOOGLE_CLOUD_PROJECT=heidless-pfolio-deploy-0
 export USE_CLOUD_SQL_AUTH_PROXY=true
 export CLOUDRUN_SERVICE_URL=https://heidless-pfolio-deploy@appspot.gserviceaccount.com
 
@@ -467,9 +467,10 @@ export CLOUDRUN_SERVICE_URL=https://heidless-pfolio-deploy@appspot.gserviceaccou
 
 ### enable cloud proxy
 ```
-./cloud-sql-proxy --credentials-file ./heidless-pfolio-deploy-f5ccc52a65af.json \
---port 1234 heidless-pfolio-deploy:europe-west2:pfolio-instance-0
+./cloud-sql-proxy --credentials-file ./heidless-pfolio-deploy-0-b97b8a94c2ba.json \
+--port 1234 heidless-pfolio-deploy-0:europe-west2:pfolio-instance-0
   
+
 <!-- ./cloud-sql-proxy --credentials-file heidless-pfolio-deploy-f5ccc52a65af.json --port 1234 heidless-pfolio-deploy:europe-west2:pfolio-instance-0 -->
 
 # kill & restart - IF address already in use

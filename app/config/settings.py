@@ -226,14 +226,14 @@ USE_TZ = True
 from google.oauth2 import service_account
 GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-f5ccc52a65af.json')
+    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-0-b97b8a94c2ba.json')
 )
 #STATIC_URL = "/static/"
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
 
-STATIC_URL = 'https://storage.cloud.google.com/h_pfolio_deploy_0/'
+STATIC_URL = 'https://storage.cloud.google.com/pfolio-backend-bucket-0/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
