@@ -71,11 +71,13 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
     client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "pfolio_settings")
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
     
     print(f"using secrets settings: {settings_name}")
     
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    
+    
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
     
     print(f"SECRETS: {payload}")
@@ -185,7 +187,7 @@ DATABASES = {"default": env.db()}
 # If the flag as been set, configure to use proxy
 if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
     DATABASES["default"]["HOST"] = "127.0.0.1"
-    DATABASES["default"]["PORT"] = 5432
+    DATABASES["default"]["PORT"] = 1234
 
 # [END cloudrun_django_database_config] #
 
@@ -224,14 +226,14 @@ USE_TZ = True
 from google.oauth2 import service_account
 GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/pfolio-deploy-1-689b97414b7c.json')
+    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-f5ccc52a65af.json')
 )
 #STATIC_URL = "/static/"
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
 
-STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-4/'
+STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-0/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'

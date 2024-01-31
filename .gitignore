@@ -1,7 +1,7 @@
 
 venv
 venv/*
-pfolio-live*.json
+heidless-pfolio-deploy*.json
 cloud-run-install*.json
 cloud-sql-proxy
 # project

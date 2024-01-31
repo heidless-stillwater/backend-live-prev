@@ -1,5 +1,8 @@
 .gcloudignore
 
+Pipfile
+Pipfile.lock
+
 # Ignore local .env file
 .env
 

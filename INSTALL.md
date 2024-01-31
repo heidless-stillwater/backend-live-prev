@@ -219,24 +219,28 @@ curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/clou
 ##################################################
 # if on LOCAL
 # restart server
+
 sudo service postgresql restart
+
+# check process running
+ps aux | grep '[b]in/postgres
 
 ##################################################
 # if on GAE
 
 # ensure correct project
-gcloud config set project cloud-run-install
+gcloud config set project heidless-pfolio-deploy
 
 # initialise DB Instance (takes some time  - take a break and let it process)
 gcloud sql instances create pfolio-instance-0 \
-    --project cloud-run-install \
+    --project heidless-pfolio-deploy \
     --database-version POSTGRES_13 \
     --tier db-f1-micro \
     --region europe-west2
 -                                                       
-Created [https://sqladmin.googleapis.com/sql/v1beta4/projects/cloud-run-install/instances/pfolio-instance-0].
+Created [https://sqladmin.googleapis.com/sql/v1beta4/projects/heidless-pfolio-deploy/instances/pfolio-instance-0].
 NAME               DATABASE_VERSION  LOCATION        TIER         PRIMARY_ADDRESS  PRIVATE_ADDRESS  STATUS
-pfolio-instance-0  POSTGRES_13       europe-west2-b  db-f1-micro  35.197.202.26    -                RUNNABLE
+pfolio-instance-0  POSTGRES_13       europe-west2-b  db-f1-micro  35.197.253.39    -                RUNNABLE
 -
 	
 # if asked - enable API [sqladmin.googleapis.com]
@@ -246,10 +250,10 @@ gcloud sql databases create pfolio-db-0 \
 	
 gcloud sql users create pfolio-user-0 \
     --instance pfolio-instance-0 \
-    --password GJaUUsg_%RYnXVCB
+    --password Havana111965
 
 # check status of instance
-gcloud sql instances describe --project pfolio-live pfolio-instance-0
+gcloud sql instances describe --project heidless-pfolio-deploy pfolio-instance-0
 -
 -
 
@@ -257,7 +261,7 @@ gcloud sql instances describe --project pfolio-live pfolio-instance-0
 # assemble link from the above info
 postgres://<USER>:<PWD>@//cloudsql/<PROJECT ID>:<REGION>:<INSTANCE>/<DB>
 --
-postgres://pfolio-user-0:GJaUUsg_%RYnXVCB@//cloudsql/cloud-run-install:europe-west2:pfolio-instance-0/pfolio-db-0
+postgres://pfolio-user-0:Havana111965//cloudsql/heidless-pfolio-deploy:europe-west2:pfolio-instance-0/pfolio-db-0
 --
 
 ##################### TIPS/TRICKS ############################
@@ -277,19 +281,22 @@ gcloud sql instances delete pfolio-instance-2
 ## storage bucket
 ```
 # PROJECT: pfolio-
-gcloud config set project cloud-run-install
+gcloud config set project heidless-pfolio-deploy
 
 # initialise BUCKET
-gsutil mb -l europe-west2 gs://api-bucket-0
+gsutil mb -l europe-west2 gs://h_pfolio_deploy_0
 ```
 
 ### service account(s)
 ```
-PROJECT: cloud-run-install
-ID: cloud-run-install
+PROJECT: heidless-pfolio-deploy
+ID: heidless-pfolio-deploy
 
 'IAM & ADMIN'->Service Accounts
+
+```
 api-svc@cloud-run-install.iam.gserviceaccount.com
+```
 -
 edit principal
 -
@@ -314,13 +321,17 @@ generate & install KEY file
 ## secrets setup
 ```
 # setup local environment - TEMPORARILY
-cd config
-echo DATABASE_URL=postgres://pfolio-user-0:GJaUUsg_%RYnXVCB@//cloudsql/cloud-run-install:europe-west2:pfolio-instance-0/pfolio-db-0>> .env
-
+# 
+<!-- echo DATABASE_URL=postgres://DATABASE_USERNAME:DATABASE_PASSWORD@//cloudsql/PROJECT_ID:REGION:INSTANCE_NAME/DATABASE_NAME > .env
+echo GS_BUCKET_NAME=PROJECT_ID_MEDIA_BUCKET >> .env
 echo SECRET_KEY=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]'| fold -w 50 | head -n1) >> .env
+ -->
 
-echo GS_BUCKET_NAME=pfolio-bucket-3 >> .env
 
+cd config
+echo DATABASE_URL=postgres://pfolio-user-0:Havana111965@//cloudsql/heidless-pfolio-deploy:europe-west2:pfolio-instance-0/pfolio-db-0 > .env
+echo GS_BUCKET_NAME=h_pfolio_deploy_0 >> .env
+echo SECRET_KEY=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]'| fold -w 50 | head -n1) >> .env
 echo FRONTEND_URL=https://frontend-live-ceclcnqauq-nw.a.run.app/ >> .env
 
 # store in secret manager
@@ -331,7 +342,8 @@ gcloud secrets describe django_settings
 
 # Grant access to the secret to the App Engine standard service account
 gcloud secrets add-iam-policy-binding django_settings \
-    --member serviceAccount:pfolio-svc@cloud-run-install.iam.gserviceaccount.com \
+    --member 
+    serviceAccount:pfolio-0@heidless-pfolio-deploy.iam.gserviceaccount.com \
     --role roles/secretmanager.secretAccessor
 		
 # test - retrieve content of 'django_settings'
@@ -373,7 +385,7 @@ It's likely that you will be refining & modifying the definitions in your SECRET
 
 ```
 # ensure you are in the right PROJECT
-gcloud config set project cloud-run-install
+gcloud config set project heidless-pfolio-deploy
 
 edit the config/.env file as needed.
 
@@ -385,7 +397,7 @@ gcloud secrets create django_settings --data-file .env
 
 # Grant access to the secret to the App Engine standard service account
 gcloud secrets add-iam-policy-binding django_settings \
-    --member serviceAccount:pfolio-svc-1@pfolio-live.iam.gserviceaccount.com \
+    --member serviceAccount:pfolio-0@heidless-pfolio-deploy.iam.gserviceaccount.com \
     --role roles/secretmanager.secretAccessor
 ```
 
@@ -399,31 +411,31 @@ A key one is where your SECRETS are stored.
 
 The settings.py priorities local '.env' over your Google Secrets.
 
-AFTER we've updated the following in settings.py we will be 'diasbling' local definitions.
+AFTER we've updated the following in settings.py we will be 'disabling' local definitions.
 
 ### settings.py
 Need to link to the 'key' file you downloaded earlier.
 set GS_CREDENTIALS
 ```
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/pfolio-release-0-113d1371f22c.json')
+    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-f5ccc52a65af.json')
 )
 ```
 
 set STATIC_URL
 ```
-STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-1/'
+STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-0/'
 ```
 
 disable local settings to force use of Google Secrets
 ```
-mv config/.env config/.env-orig
+mv config/.env config/.env-gae
 ```
 
 ### on localhost - run in dedicated shell - <span style="color: #ff807f">DELETE!!!</span>
 ```
 # configure access
-https://console.cloud.google.com/sql/instances/pf-pg-instance-0/connections/networking?project=xenon-pier-390513
+https://console.cloud.google.com/sql/instances/pfolio-instance-0/connections/networking?project=heidless-pfolio-deploy
 
 pfolio-backend-db-instance-0 -> connections -> add network
 -
@@ -434,7 +446,7 @@ rob-laptop
 gcloud sql connect pfolio-instance-0 --database pfolio-db-0 --user=pfolio-user-0 --quiet
 
 password:
-GJaUUsg_%RYnXVCB
+Havana111965
 ```
 
 ### ESSENTIAL: set CLOUD vars
@@ -444,16 +456,21 @@ GJaUUsg_%RYnXVCB
 
 ```
 
+##########################################
 
 ```
-export GOOGLE_CLOUD_PROJECT=cloud-run-install
+export GOOGLE_CLOUD_PROJECT=heidless-pfolio-deploy
 export USE_CLOUD_SQL_AUTH_PROXY=true
-export CLOUDRUN_SERVICE_URL=https://cloud-run-install.nw.r.appspot.com
+export CLOUDRUN_SERVICE_URL=https://heidless-pfolio-deploy@appspot.gserviceaccount.com
+
 ```
 
 ### enable cloud proxy
 ```
-./cloud-sql-proxy --credentials-file cloud-run-install-46148fec2375.json --port 1234 cloud-run-install:europe-west2:pfolio-instance-0
+./cloud-sql-proxy --credentials-file ./heidless-pfolio-deploy-f5ccc52a65af.json \
+heidless-pfolio-deploy:europe-west2:pfolio-instance-0
+  
+<!-- ./cloud-sql-proxy --credentials-file heidless-pfolio-deploy-f5ccc52a65af.json --port 1234 heidless-pfolio-deploy:europe-west2:pfolio-instance-0 -->
 
 # kill & restart - IF address already in use
 sudo lsof -i -P -n | grep LISTEN
@@ -463,6 +480,11 @@ kill -9 <PID>
 
 ### init & run backend
 ```
+
+
+python manage.py makemigrations
+python manage.py migrate
+
 python manage.py createsuperuser
 -
 heidless
@@ -470,8 +492,6 @@ rob.lockhart@yahoo.co.uk
 sdfsdgasgTHW66GDGdfdff
 -
 
-python manage.py makemigrations
-python manage.py migrate
 python manage.py collectstatic
 
 python manage.py runserver 8080
@@ -507,7 +527,7 @@ gcloud app deploy
 # display APP URL
 gcloud app describe --format "value(defaultHostname)"
 -
-https://pfolio-backend-2.ew.r.appspot.com
+https://heidless-pfolio-deploy.nw.r.appspot.com
 -
 
 # monitor logs
