@@ -314,8 +314,8 @@ generate & install KEY file
 'IAM & ADMIN'->Service Accounts->'3 dots'->Manage Keys
 'ADD KEY'->JSON
 # Download & install json file
-' copy to local project/app directory'
-/home/heidless/LIVE/pfolio/WORKING/backend-LIVE-WORKING/app/config
+' copy to local project/app/config directory'
+/home/heidless/projects/backend-live/app/config
 ```
 
 ## secrets setup
@@ -332,7 +332,7 @@ cd config
 echo DATABASE_URL=postgres://pfolio-user-0:Havana111965@//cloudsql/heidless-pfolio-deploy:europe-west2:pfolio-instance-0/pfolio-db-0 > .env
 echo GS_BUCKET_NAME=h_pfolio_deploy_0 >> .env
 echo SECRET_KEY=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]'| fold -w 50 | head -n1) >> .env
-echo FRONTEND_URL=https://frontend-live-ceclcnqauq-nw.a.run.app/ >> .env
+echo FRONTEND_URL=https://pfolio-frontend-v2xr7nz45q-nw.a.run.app/ >> .env
 
 # store in secret manager
 # enable secretmanager.googleapis.com if asked
@@ -468,7 +468,7 @@ export CLOUDRUN_SERVICE_URL=https://heidless-pfolio-deploy@appspot.gserviceaccou
 ### enable cloud proxy
 ```
 ./cloud-sql-proxy --credentials-file ./heidless-pfolio-deploy-f5ccc52a65af.json \
-heidless-pfolio-deploy:europe-west2:pfolio-instance-0
+--port 1234 heidless-pfolio-deploy:europe-west2:pfolio-instance-0
   
 <!-- ./cloud-sql-proxy --credentials-file heidless-pfolio-deploy-f5ccc52a65af.json --port 1234 heidless-pfolio-deploy:europe-west2:pfolio-instance-0 -->
 

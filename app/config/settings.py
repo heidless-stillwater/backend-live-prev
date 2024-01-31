@@ -233,7 +233,7 @@ DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
 
-STATIC_URL = 'https://storage.cloud.google.com/pfolio-bucket-0/'
+STATIC_URL = 'https://storage.cloud.google.com/h_pfolio_deploy_0/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
