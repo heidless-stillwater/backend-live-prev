@@ -546,6 +546,16 @@ env_variables:
 
 -
 
+# BACKUPS
+pg_dump \
+-U pfolio-user-0	 \
+--format=custom \
+--no-owner \
+--no-acl \
+pfolio-db-0	 > pfolio-db-0.dmp
+
+
+
 # re-deploy
 gcloud app deploy
 
