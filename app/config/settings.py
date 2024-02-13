@@ -34,15 +34,19 @@ env_file = os.path.join(BASE_DIR, "config/.env")
 #print(os.getenv('SECRET_KEY'))
 #print(os.getenv('FRONTEND_URL'))
 
-#print(os.getenv('DATABASE_NAME'))
-#print(os.getenv('DATABASE_USER'))
-#print(os.getenv('DATABASE_PASS'))
-#print(os.getenv('DATABASE_HOST'))
-#print(os.getenv('DATABASE_PORT'))
-#print("#####################")
+# print(os.getenv('DATABASE_NAME'))
+# print(os.getenv('DATABASE_USER'))
+# print(os.getenv('DATABASE_PASS'))
+# print(os.getenv('DATABASE_HOST'))
+# print(os.getenv('DATABASE_PORT'))
+# print("#####################")
 
-        #'HOST': '35.189.112.171',
-        #'HOST': '10.154.0.3',   # insternal IP
+#         #'HOST': '35.189.112.171',
+#         #'HOST': '10.154.0.3',   # insternal IP
+
+# print(f'checking for {env_file}')
+
+
 
 # Attempt to load the Project ID into the environment, safely failing on error.
 try:
@@ -51,6 +55,7 @@ try:
 except google.auth.exceptions.DefaultCredentialsError:
     pass
 
+print(f'checking for {env_file}')
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
     print("### Using local secret file")
@@ -71,7 +76,7 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
     client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    settings_name = os.environ.get("SETTINGS_NAME", "pfolio_secrets")
     
     print(f"using secrets settings: {settings_name}")
     
@@ -226,14 +231,14 @@ USE_TZ = True
 from google.oauth2 import service_account
 GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-0-b97b8a94c2ba.json')
+    os.path.join(BASE_DIR, 'config/heidless-pfolio-deploy-3-47ae2d64bc21.json')
 )
 #STATIC_URL = "/static/"
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_DEFAULT_ACL = "publicRead"
 
-STATIC_URL = 'https://storage.cloud.google.com/pfolio-backend-bucket-0/'
+STATIC_URL = 'https://storage.cloud.google.com/pfolio-backend-bucket-3/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
